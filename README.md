@@ -26,7 +26,7 @@ Setting brew-github-bottles up is quite simple. In your formula, add
 require "hooks/bottles"
 require "homebrew/github/bottles"
 
-github_bottle = GithubBottle.new(formula_name, repo_base_path, authorization)
+github_bottle = GithubBottle.new(repo_base_path, authorization)
 
 Homebrew::Hooks::Bottles.setup_formula_has_bottle do |formula|
   github_bottle.bottled?(formula)
@@ -39,9 +39,7 @@ end
 
 And that's it!
 
-GithubBottle takes 3 parameters:
-**formula_name**
-This is the name of your formula in kebab-case
+GithubBottle takes 2 parameters:
 
 **repo_base_path**
 The base path to your repo in Github. This should probably look like "https://api.github.com/repos/{username}/{reponame}"

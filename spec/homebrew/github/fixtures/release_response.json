@@ -1,0 +1,36 @@
+{
+  "url": "https://api.github.com/releases/tags/bottles/2125159",
+  "assets_url": "https://api.github.com/releases/tags/bottles/2125159/assets",
+  "upload_url": "https://uploads.github.com/repos/DopplerLabs/homebrew-formulae/releases/2125159/assets",
+  "html_url": "https://github.com/DopplerLabs/homebrew-formulae/releases/tag/bottles",
+  "id": 2125159,
+  "tag_name": "bottles",
+  "target_commitish": "master",
+  "name": "Bottled binaries",
+  "prerelease": false,
+  "created_at": "2015-11-13T02:31:25Z",
+  "published_at": "2015-11-13T23:26:59Z",
+  "assets": [
+    {
+      "url": "https://api.github.com/releases/tags/bottles/assets/1035870",
+      "id": 1035870,
+      "name": "test-bottle-0.9.0.osx.bottle.tar.gz",
+      "created_at": "2015-11-13T23:26:33Z",
+      "updated_at": "2015-11-13T23:26:34Z"
+    },
+    {
+      "url": "https://api.github.com/releases/tags/bottles/assets/1093124",
+      "id": 1093124,
+      "name": "test-bottle-0.9.3.osx.bottle.tar.gz",
+      "created_at": "2015-12-03T06:02:46Z",
+      "updated_at": "2015-12-03T06:02:56Z"
+    },
+    {
+      "url": "https://api.github.com/releases/tags/bottles/assets/1093318",
+      "id": 1093318,
+      "name": "test-bottle-1.0.0.osx.bottle.tar.gz",
+      "created_at": "2015-12-03T08:15:35Z",
+      "updated_at": "2015-12-03T08:15:46Z"
+    }
+  ]
+}
