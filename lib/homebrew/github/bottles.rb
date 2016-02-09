@@ -20,6 +20,15 @@ class GithubBottle
     "#{formula.name}-#{formula.pkg_version}.#{bottle_tag}.bottle.tar.gz"
   end
 
+  def send_request(uri, req)
+    Net::HTTP.start(uri.hostname, uri.port,
+      :use_ssl => uri.scheme == "https") do |http|
+      http.open_timeout = 5
+      http.read_timeout = 5
+      http.request(req)
+    end
+  end
+
   def inner_bottled?(formula)
     # Get the assets from github for this formula
     release_uri = URI(@project_basepath + "releases/tags/bottles")
@@ -30,12 +39,7 @@ class GithubBottle
       req["Authorization"] = @authorization
     end
 
-    res = Net::HTTP.start(release_uri.hostname, release_uri.port,
-      :use_ssl => release_uri.scheme == "https") do |http|
-      http.open_timeout = 2
-      http.read_timeout = 2
-      http.request(req)
-    end
+    res = send_request(release_uri, req)
 
     unless Net::HTTPOK === res
       raise "Failed to connect to #{@release_uri} - #{e.message}"
@@ -52,7 +56,7 @@ class GithubBottle
     end
 
     false
-  rescue Exception => e
+  rescue StandardError => e
     opoo "Something went wrong trying to find the bottle from github - #{e.message}"
     false
   end
@@ -77,7 +81,6 @@ class GithubBottle
     cache_file = here_cache/file
 
     ohai "brew-github-bottles: Downloading #{asset_uri}"
-    success = false
 
     # Get the asset from github
     req = Net::HTTP::Get.new(asset_uri)
@@ -88,12 +91,7 @@ class GithubBottle
 
     req["Accept"] = "application/octet-stream"
 
-    res = Net::HTTP.start(asset_uri.hostname, asset_uri.port,
-      :use_ssl => asset_uri.scheme == "https") do |http|
-      http.open_timeout = 5
-      http.read_timeout = 5
-      http.request(req)
-    end
+    res = send_request(asset_uri, req)
 
     data = ""
     begin
@@ -109,13 +107,13 @@ class GithubBottle
         else
           raise
       end
-    rescue Exception => e
+    rescue StandardError => e
       puts e.backtrace.inspect
       raise "brew-github-bottles: Failed to download resource \"#{name}\" (#{e.message})"
     end
 
     open cache_file, "w" do |io|
-      io.write res.body
+      io.write data
     end
 
     bottle_install_dir = formula.prefix
