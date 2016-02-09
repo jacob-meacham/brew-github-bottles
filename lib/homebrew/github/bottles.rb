@@ -106,18 +106,15 @@ class GithubBottle
     ohai "brew-github-bottles: Downloading #{asset_uri}"
 
     # Get the asset from github
-    def build_request(uri)
-      req = Net::HTTP::Get.new(uri)
+    req = Net::HTTP::Get.new(asset_uri)
 
-      unless @authorization.nil?
-        req["Authorization"] = @authorization
-      end
-
-      req["Accept"] = "application/octet-stream"
-      req
+    unless @authorization.nil?
+      req["Authorization"] = @authorization
     end
 
-    res = send_request(asset_uri, build_request(asset_uri))
+    req["Accept"] = "application/octet-stream"
+
+    res = send_request(asset_uri, req)
 
     data = ""
     begin
@@ -125,10 +122,8 @@ class GithubBottle
         when Net::HTTPSuccess then
           data = res.body
         when Net::HTTPRedirection then
-          # Follow the redirect
-          redirect_uri = URI(res["location"])
-          new_req = build_request(redirect_uri)
-          res = send_request(redirect_uri, new_req)
+          # Follow the redirect, which already includes the credentials
+          res = Net::HTTP.get_response(URI(res['location']))
           unless Net::HTTPOK === res
             raise
           end
