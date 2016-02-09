@@ -1,38 +1,67 @@
-# Brew::Github::Bottles
+# brew-github-bottles
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/brew/github/bottles`. To experiment with that code, run `bin/console` for an interactive prompt.
+The brew-github-bottles gem allows homebrew to pull bottles from github releases - including private repositories. This is especially helpful if you've created your own private Homebrew Tap and want to publish bottles without setting up an internal service.
 
-TODO: Delete this and the text above, and describe your gem
 
 ## Installation
+Unfortunately, homebrew does not make it simple to use gems from within a formula. There are a few options:
 
-Add this line to your application's Gemfile:
+1. Use a git submodule
+2. Do a local gem install and commit the installed file
+3. Require all users to run gem install brew-github-bottles before running a brew install of your formula
 
-```ruby
-gem 'brew-github-bottles'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install brew-github-bottles
 
 ## Usage
+### Formula
+Setting brew-github-bottles up is quite simple. In your formula, add
 
-TODO: Write usage instructions here
+```
+require "hooks/bottles"
+require "homebrew/github/bottles"
 
-## Development
+github_bottle = GithubBottle.new(formula_name, repo_base_path, authorization)
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+Homebrew::Hooks::Bottles.setup_formula_has_bottle do |formula|
+  github_bottle.bottled?(formula)
+end
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+Homebrew::Hooks::Bottles.setup_pour_formula_bottle do |formula|
+  github_bottle.pour(formula)
+end
+```
+
+And that's it!
+
+GithubBottle takes 3 parameters:
+**formula_name**
+This is the name of your formula in kebab-case
+
+**repo_base_path**
+The base path to your repo in Github. This should probably look like "https://api.github.com/repos/{username}/{reponame}"
+
+**authorization**
+The authorization to pass to github. This is only required if the Github repo is private. This is passed as the Authorization header to Github (see the [Github docs](https://developer.github.com/v3/oauth/)). If using token auth, the token should not be committed in the repo, and its permissions should be as constrained as possible.
+
+### Github
+This gem searches the release tagged 'bottles' for any bottles that satisfy the standard bottle naming scheme:
+
+```
+"#{formula.name}-#{formula.pkg_version}.#{bottle_tag}.bottle.tar.gz"
+```
+
+If you want to use a different naming scheme for your bottles, you can override the function file_pattern in GithubBottle:
+
+```
+class MyGithubBottle < GithubBottle
+    def file_pattern(formula)
+        "my-interesting-pattern.tar.gz"
+    end
+end
+```
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/brew-github-bottles. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/jacob-meacham/brew-github-bottles. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](contributor-covenant.org) code of conduct.
 
 
 ## License
