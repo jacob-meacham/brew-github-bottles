@@ -116,7 +116,6 @@ describe GithubBottle do
          to_return(:status => 302, :headers => { 'Location' => "https://api.github.com/releases/assets/redirect"})
 
     stub_request(:get, "https://api.github.com/releases/assets/redirect").
-         with(:headers => {'Accept'=>'application/octet-stream'}).
          to_return(:status => 200, :body => @get_release_response)
 
     bottle.pour(@cache_root, @formula)
@@ -177,7 +176,6 @@ describe GithubBottle do
          to_return(:status => 302, :headers => { 'Location' => "https://api.github.com/releases/assets/redirect"})
 
     stub_request(:get, "https://api.github.com/releases/assets/redirect").
-         with(:headers => {'Accept'=>'application/octet-stream'}).
          to_return(:status => 500)
 
     expect {bottle.pour(@cache_root, @formula)}.to raise_error(GithubBottle::Error)
