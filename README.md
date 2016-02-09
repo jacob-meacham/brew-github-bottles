@@ -1,3 +1,10 @@
+[![Build Status](https://travis-ci.org/jacob-meacham/brew-github-bottles.svg?branch=develop)](https://travis-ci.org/jacob-meacham/brew-github-bottles)
+
+[![Coverage Status](https://coveralls.io/repos/github/jacob-meacham/brew-github-bottles/badge.svg?branch=develop)](https://coveralls.io/github/jacob-meacham/brew-github-bottles?branch=develop)
+
+[![Code Climate](https://codeclimate.com/github/jacob-meacham/brew-github-bottles/badges/gpa.svg)](https://codeclimate.com/github/jacob-meacham/brew-github-bottles)
+
+
 # brew-github-bottles
 
 The brew-github-bottles gem allows homebrew to pull bottles from github releases - including private repositories. This is especially helpful if you've created your own private Homebrew Tap and want to publish bottles without setting up an internal service.
