@@ -2,9 +2,9 @@ require "net/http"
 require "json"
 
 class GithubBottle
-  def initialize(brew_project_name, project_basepath, authorization)
+  def initialize(formula_name, project_basepath, authorization)
     @authorization = authorization
-    @brew_project_name = brew_project_name
+    @formula_name = formula_name
     @project_basepath = project_basepath
     @project_basepath << "/" unless project_basepath.end_with?("/")
 
@@ -26,7 +26,9 @@ class GithubBottle
 
     req = Net::HTTP::Get.new(release_uri)
 
-    req["Authorization"] = @authorization
+    unless @authorization.nil?
+      req["Authorization"] = @authorization
+    end
 
     res = Net::HTTP.start(release_uri.hostname, release_uri.port,
       :use_ssl => release_uri.scheme == "https") do |http|
@@ -69,7 +71,7 @@ class GithubBottle
     asset_uri = URI(@project_basepath + "releases/assets/#{@bottle_asset_id}")
 
     name = formula.name
-    here_cache = (HOMEBREW_CACHE/@brew_project_name)
+    here_cache = (HOMEBREW_CACHE/@formula_name)
     here_cache.mkpath
     file = file_pattern formula
     cache_file = here_cache/file
@@ -80,7 +82,10 @@ class GithubBottle
     # Get the asset from github
     req = Net::HTTP::Get.new(asset_uri)
 
-    req["Authorization"] = @authorization
+    unless @authorization.nil?
+      req["Authorization"] = @authorization
+    end
+
     req["Accept"] = "application/octet-stream"
 
     res = Net::HTTP.start(asset_uri.hostname, asset_uri.port,
