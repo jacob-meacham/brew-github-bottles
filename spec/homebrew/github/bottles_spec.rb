@@ -19,7 +19,7 @@ describe GithubBottle do
   end
 
   after(:each) do
-    #FileUtils.rm_rf(@cache_root)
+    FileUtils.rm_rf(@cache_root)
   end
 
   it 'should append a / to the base path' do
