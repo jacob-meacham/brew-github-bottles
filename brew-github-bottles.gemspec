@@ -1,10 +1,12 @@
 # coding: utf-8
-require 'git-version-bump'
+lib = File.expand_path('../lib/', __FILE__)
+$:.unshift lib unless $:.include?(lib)
+
+require 'homebrew/github/bottles/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "brew-github-bottles"
-  spec.version       = GVB.version
-  spec.date          = GVB.date
+  spec.version       = Homebrew::Github::Bottles::VERSION
   spec.authors       = ["Jacob Meacham"]
   spec.email         = ["jacob.e.meacham@gmail.com"]
   spec.summary       = "Allows homebrew to use github releases as a bottle repository."
