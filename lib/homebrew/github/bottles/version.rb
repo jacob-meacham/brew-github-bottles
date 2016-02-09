@@ -1,7 +1,9 @@
 module Homebrew
     module Github
         module Bottles
-            VERSION = `git describe`.gsub! '-', '.'
+            #TODO: A version that pulls from git
+            #VERSION = `git describe`.gsub! '-', '.'
+            VERSION = '0.1.0.dev'
         end
     end
 end
