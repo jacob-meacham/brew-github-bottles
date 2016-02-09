@@ -41,6 +41,7 @@ class GithubBottle
     "#{formula.name}-#{formula.pkg_version}.#{bottle_tag}.bottle.tar.gz"
   end
 
+  private
   def send_request(uri, req)
     Net::HTTP.start(uri.hostname, uri.port,
       :use_ssl => uri.scheme == "https") do |http|
@@ -50,6 +51,7 @@ class GithubBottle
     end
   end
 
+  private
   def inner_bottled?(formula)
     # Get the assets from github for this formula
     release_uri = URI(@project_basepath + "releases/tags/bottles")
@@ -82,6 +84,7 @@ class GithubBottle
     false
   end
 
+  public
   def bottled?(formula)
     if @has_checked_bottle
       return @has_bottle
@@ -103,15 +106,18 @@ class GithubBottle
     ohai "brew-github-bottles: Downloading #{asset_uri}"
 
     # Get the asset from github
-    req = Net::HTTP::Get.new(asset_uri)
+    def build_request(uri)
+      req = Net::HTTP::Get.new(uri)
 
-    unless @authorization.nil?
-      req["Authorization"] = @authorization
+      unless @authorization.nil?
+        req["Authorization"] = @authorization
+      end
+
+      req["Accept"] = "application/octet-stream"
+      req
     end
 
-    req["Accept"] = "application/octet-stream"
-
-    res = send_request(asset_uri, req)
+    res = send_request(asset_uri, build_request(asset_uri))
 
     data = ""
     begin
@@ -119,7 +125,10 @@ class GithubBottle
         when Net::HTTPSuccess then
           data = res.body
         when Net::HTTPRedirection then
-          res = Net::HTTP.get_response(URI(res["location"]))
+          # Follow the redirect
+          redirect_uri = URI(res["location"])
+          new_req = build_request(redirect_uri)
+          res = send_request(redirect_uri, new_req)
           unless Net::HTTPOK === res
             raise
           end
