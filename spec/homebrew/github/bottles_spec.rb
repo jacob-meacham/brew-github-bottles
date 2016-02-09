@@ -61,6 +61,17 @@ describe GithubBottle do
     expect(bottled).to eq false
   end
 
+  it 'should return false if there is an HTTP error' do
+    bottle = GithubBottle.new('https://api.github.com', 'token foo')
+    bottle.bottle_asset_id = 123456
+
+    stub_request(:get, "https://api.github.com/releases/tags/bottles").
+         with(:headers => {'Authorization'=>'token foo'}).to_return(:status => 500)
+
+    bottled = bottle.bottled?(@formula)
+    expect(bottled).to eq false
+  end
+
   it 'should only check once for bottles' do
     bottle = GithubBottle.new('https://api.github.com', 'token foo')
     stub_get = stub_request(:get, "https://api.github.com/releases/tags/bottles").
@@ -167,7 +178,7 @@ describe GithubBottle do
 
     stub_request(:get, "https://api.github.com/releases/assets/redirect").
          with(:headers => {'Accept'=>'application/octet-stream'}).
-         to_raise(GithubBottle::Error)
+         to_return(:status => 500)
 
     expect {bottle.pour(@cache_root, @formula)}.to raise_error(GithubBottle::Error)
   end

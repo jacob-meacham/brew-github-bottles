@@ -65,7 +65,7 @@ class GithubBottle
     res = send_request(release_uri, req)
 
     unless Net::HTTPOK === res
-      raise "Failed to connect to #{@release_uri} - #{e.message}"
+      raise "Failed to connect to #{@release_uri.to_s} - Got #{res.code} (#{res.body})"
     end
 
     release_json = JSON.parse(res.body)
