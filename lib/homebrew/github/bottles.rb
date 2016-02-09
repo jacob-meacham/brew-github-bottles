@@ -1,10 +1,26 @@
 require "net/http"
 require "json"
 
+begin
+  require "bottles"
+rescue LoadError
+  # If we're not running in the Homebrew context, we need to stub out a few things
+  def bottle_tag
+    'osx'
+  end
+
+  def ohai(msg)
+    puts msg
+  end
+
+  def opoo(msg)
+    puts msg
+  end
+end
+
 class GithubBottle
-  def initialize(formula_name, project_basepath, authorization)
+  def initialize(project_basepath, authorization=nil)
     @authorization = authorization
-    @formula_name = formula_name
     @project_basepath = project_basepath
     @project_basepath << "/" unless project_basepath.end_with?("/")
 
@@ -17,6 +33,7 @@ class GithubBottle
   attr_accessor :project_basepath
 
   def file_pattern(formula)
+    # bottle_tag is defined in bottles, required above
     "#{formula.name}-#{formula.pkg_version}.#{bottle_tag}.bottle.tar.gz"
   end
 
@@ -75,7 +92,7 @@ class GithubBottle
     asset_uri = URI(@project_basepath + "releases/assets/#{@bottle_asset_id}")
 
     name = formula.name
-    here_cache = (HOMEBREW_CACHE/@formula_name)
+    here_cache = (HOMEBREW_CACHE/formula.name)
     here_cache.mkpath
     file = file_pattern formula
     cache_file = here_cache/file
