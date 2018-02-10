@@ -7,6 +7,10 @@
 
 # brew-github-bottles
 
+<aside class="warning">
+DEPRECATED. This plugin no longer works with newer versions of Homebrew.
+</aside>
+
 The brew-github-bottles gem allows homebrew to pull bottles from github releases - including private repositories. This is especially helpful if you've created your own private Homebrew Tap and want to publish bottles without setting up an internal service.
 
 
